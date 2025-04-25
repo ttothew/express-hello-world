@@ -1,10 +1,27 @@
 const express = require("express");
 const app = express();
-const port = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3001;
 
 app.get("/", (req, res) => res.type('html').send(html));
 
-const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.post('/twilio/incoming-call', (req, res) => {
+  console.log('Incoming call from Twilio:', req.body);
+
+  res.type('text/xml').send(`
+    <Response>
+      <Say voice="alice">Thanks for calling. This is your backend speaking.</Say>
+    </Response>
+  `);
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+const server = app.listen(PORT, () => console.log(`Example app listening on port ${PORT}!`));
 
 server.keepAliveTimeout = 120 * 1000;
 server.headersTimeout = 120 * 1000;
